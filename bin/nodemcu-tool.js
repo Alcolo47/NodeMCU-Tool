@@ -269,7 +269,7 @@ program.command("init")
                     pattern: /^.+$/,
                     description: _colors.cyan("[NodeMCU-Tool]") + "~ Serial connection to use, e.g. COM1 or /dev/ttyUSB2",
                     required: false,
-                    default: "/dev/ttyUSB0",
+                    default: null,
                 },
             },
         });
