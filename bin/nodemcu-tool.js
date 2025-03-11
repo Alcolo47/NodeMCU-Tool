@@ -139,6 +139,12 @@ program.command("upload [files...]")
     // run file after upload
     .option("--run", "Running a file on NodeMCU after uploading. Only available when uploading a single file!", null)
 
+    // reset after upload
+    .option("-R --reset", "Soft reset after uploading.", null)
+
+    // launch terminal after upload
+    .option("-T --terminal", "Launch terminal after all.", null)
+
     .action(asyncWrapper(async (filelist, options) => {
         // initialize a new progress bar
         const bar = new _progressbar.Bar({
@@ -150,7 +156,7 @@ program.command("upload [files...]")
         const files = await _globExpression.expand(filelist);
 
         // files provided ?
-        if (files.length == 0) {
+        if (files.length === 0) {
             _logger.error("No files provided for upload (empty file-list)");
             return;
         }
@@ -160,7 +166,7 @@ program.command("upload [files...]")
 
         await _nodemcutool.upload(files, options, function (current, total, fileNumber) {
             // new file ?
-            if (currentFileNumber != fileNumber) {
+            if (currentFileNumber !== fileNumber) {
                 bar.stop();
                 currentFileNumber = fileNumber;
                 bar.start(total, 1);
@@ -218,7 +224,7 @@ program.command("mkfs")
         const c = result.confirm.toLowerCase();
 
         // check
-        if (c != "y" && c != "yes") {
+        if (c !== "y" && c !== "yes") {
             _logger.error("Formatting aborted");
             return;
         }
