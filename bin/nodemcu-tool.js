@@ -145,6 +145,9 @@ program.command("upload [files...]")
     // launch terminal after upload
     .option("-T --terminal", "Launch terminal after all.", null)
 
+    // launch terminal after upload
+    .option("-M --modified", "Upload only modified files.", null)
+
     .action(asyncWrapper(async (filelist, options) => {
         // initialize a new progress bar
         const bar = new _progressbar.Bar({
