@@ -10,3 +10,5 @@ Due to the limitations of a line-wise file upload, these maximal transfer rate c
 It's recommended to use the `--minify` flag to minify the code before uploading. Additionally, newer firmware versions `1.x.x` using an auto-baudrate detection algorithm - this means you can increase the baudrate to e.g. 115200 `--baud 115200` to speed up the transfer 
 
 Additionally include the native [encoder Module](http://nodemcu.readthedocs.io/en/master/en/modules/encoder/) into your firmware to speed-up the uploading by factor 4..10!
+
+`--modified` option will also reduce your upload time by only uploading modified files.

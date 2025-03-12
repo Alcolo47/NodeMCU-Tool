@@ -1,6 +1,15 @@
 ## --- Branch 4.x --- ##
 
-### Unreleased ###
+### Unreleased, 5.1.0 ###
+
+* Adding options to `upload` command:
+  * `--reset` to reset the board after uploading
+  * `--terminal` to launch a terminal session after uploading
+  * `--modified` to only download files that have been modified since the last upload
+
+* Simple auto detection of the device name (search the 1st `/dev/ttyUSB*` : linux only...)
+
+* Fixes: `upload --compile` now stops on errors.
 
 ### 5.0.0 ###
 

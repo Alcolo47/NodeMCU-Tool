@@ -4,6 +4,18 @@ Notes about this fork
 Adds support for the latest nodemcu-firmware/dev-esp32 branch. 
 The fork supports both ESP8266 and ESP32, ESP32c6, ESP32h2, ESP32xx chips.
 
+
+There is few no GUI tools to upload files on ESP8266 family boards that still working today.
+
+In 2025, the other uploader project [nodemcu-uploader](https://github.com/kmpm/nodemcu-uploader) 
+is not maintained anymore and lacks of the same bugs that the AndiDittrich/NodeMCU-Tool version 
+(terminal EOL presumed to follow the RISC convention (0x10,0x13), but today NodeMCU use POSIX convention (0x10)).
+
+This bug was fixed by serg3295 fork, then I forked it again to add some features. 
+I hope those fixtures will be merged in the original project.
+
+
+
 NodeMCU-Tool
 ============
 Upload/Download Lua files to your ESP8266/ESP32 module with NodeMCU firmware.
@@ -177,7 +189,13 @@ $ npx nodemcu-tool --version
 
 ### 2. Identify Your NodeMCU Device ###
 
-Now you can connect the NodeMCU Module to your computer. The module will be accessible via a virtual serial port. You can identify the port by using the `devices` command.
+`nodemcu-tools` try to determine automatically the device name of your NodeMCU module. It will look for the first
+device that matches the path `/dev/ttyUSB*`.
+
+You can also specify the device name manually using the `--port` option.
+
+To determine the device name of your NodeMCU module, you can use the `devices` command:
+Connect your NodeMCU module to your computer and list used ports using the `devices` command.
 In this example, it is connected via `/dev/ttyUSB0`. Keep in mind that you have to provide the device-name to NodeMCU-Tool on each command!
 
 ```shell
@@ -201,14 +219,73 @@ $ nodemcu-tool mkfs --port=/dev/ttyUSB0
 ### 4. Upload a new File ###
 
 **Hint** include the native [encoder Module](https://nodemcu.readthedocs.io/en/release/modules/encoder/) into your firmware to speed-up the uploading by factor 4..10!
-
+               
+- One file:
 ```shell
-$ nodemcu-tool upload --port=/dev/ttyUSB0 helloworld.lua
-[NodeMCU-Tool] Connected
-[NodeMCU] Version: 0.9.5 | ChipID: 0xd1aa | FlashID: 0x1640e0
+$ nodemcu-tool upload helloworld.lua
+[config]      ~ Project based configuration loaded 
+[NodeMCU-Tool]~ Connected
+[device]      ~ Model: esp32 | Version: 0.0.0 | ChipID: 0xc578e36d10b3 | FlashID: 0x5e4016 
 [NodeMCU-Tool] Uploading "main.lua" ...
+[connector]   ~ Transfer-Mode: hex 
 [NodeMCU-Tool] Data Transfer complete!
 ```
+
+- Multiple files:
+```shell
+$ nodemcu-tool upload ./src/*
+[config]      ~ Project based configuration loaded 
+[NodeMCU-Tool]~ Connected 
+[device]      ~ Model: esp32 | Version: 0.0.0 | ChipID: 0xc578e36d10b3 | FlashID: 0x5e4016 
+[NodeMCU-Tool]~ Uploading "./src/init.lua" >> "init.lua"... 
+[connector]   ~ Transfer-Mode: hex 
+[NodeMCU-Tool]~ Uploading "./src/main.lua" >> "main.lua"... 
+[NodeMCU-Tool]~ Bulk File Transfer complete! 
+[NodeMCU-Tool]~ disconnecting 
+```
+
+- Run a file on NodeMCU after uploading:
+
+You can run a file on NodeMCU after uploading with the `--run` option.
+
+
+- Minifying 
+
+With the `--minify` or `-m` option you can minify files before uploading. Useful to optimize upload bandwidth.
+
+
+- Compiling remotely
+
+With the `--compile` or `-c` option you can compile lua files to bytecode (.lc) and remove the original file after upload.
+
+Besides ram optimization, this option is useful to point out errors in your lua code earlier.
+
+**Note:** `init.lua` is never compiled. `nodemcu-firmware` looks for a `init.lua` file at boot time by default.
+
+
+- Reset after upload  
+
+Force soft reset after successful upload with the `--reset` or `-R` option.
+
+
+- Launch terminal after upload  
+
+Launch a terminal session after successful upload with the `--terminal` or `-T` option.
+
+- Exemple: 
+This will upload only modified files, compile them (remotely), reset the board, and launch a terminal.
+Device name is automatically detected.
+```shell
+$ nodemcu-tool upload -cRTM ./src/*
+```
+
+#### Download only modified files ####
+
+With the `--modified` option you can only download files that have been modified since the last upload.
+
+**Note:** List of modified files is entirely determined locally according to the last modified date.
+No checks are performed on the remote device.
+
 
 ### 5. Run It directly and view the output ###
 
